@@ -2,6 +2,7 @@ import { Handler } from 'express'
 import { checkKeys } from '../misc/api'
 import { logIn, signUp } from '../logics/auth'
 import env from '../infrastructure/env'
+import { getAuth, setAuthCookie } from '../misc/auth'
 
 export default {
     '/auth': async (req, res) => {
@@ -12,14 +13,7 @@ export default {
                 res.send({ success: false });
                 return
             }
-            res.cookie('access', signedUp.tokens.access, {
-                maxAge: parseInt(env.get('ACCESS_ALIVE_MS')),
-                httpOnly: true
-            });
-            res.cookie('refresh', signedUp.tokens.refresh, {
-                maxAge: parseInt(env.get('REFRESH_ALIVE_MS')),
-                httpOnly: true
-            });
+            setAuthCookie(res, signedUp)
             res.send({ success: true, id: signedUp.id })
         }
         else {
@@ -28,15 +22,11 @@ export default {
                 res.send({ success: false });
                 return
             }
-            res.cookie('access', loggedIn.tokens.access, {
-                maxAge: parseInt(env.get('ACCESS_ALIVE_MS')),
-                httpOnly: true
-            });
-            res.cookie('refresh', loggedIn.tokens.refresh, {
-                maxAge: parseInt(env.get('REFRESH_ALIVE_MS')),
-                httpOnly: true
-            });
+            setAuthCookie(res, loggedIn)
             res.send({ success: true, id: loggedIn.id })
         }
+    },
+    '/auth/me': async (req, res, next) => {
+        res.send(''+await getAuth(req, res, next))
     }
 } as { [url: string]: Handler }
