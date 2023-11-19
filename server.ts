@@ -10,13 +10,17 @@ Object.entries(auth).forEach(([url, handler]) => {
 })
 app.listen(80)
 
-function applyHandler(url:string, handler:express.Handler) {
-    app.all(url, async (req,res,next)=>{
+function applyHandler(url: string, handler: express.Handler) {
+    app.all(url, async (req, res, next) => {
         try {
-            await handler(req,res,next)
+            await handler(req, res, next)
         } catch (e) {
             console.log(e + ' catched');
             console.trace();
+            try {
+                res.send({ success: false })
+            }
+            catch { }
         }
     });
 }
