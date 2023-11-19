@@ -1,10 +1,7 @@
 import { Handler } from 'express'
 import { checkKeys } from '../misc/api'
 import { logIn, signUp } from '../logics/auth'
-import env from '../infrastructure/env'
-import { checkAdmin, getAuth, setAuthCookie } from '../misc/auth'
-import { Request, ParamsDictionary, Response, NextFunction } from 'express-serve-static-core'
-import { ParsedQs } from 'qs'
+import { checkAdmin, setAuthCookie } from '../misc/auth'
 
 export default {
     '/auth': async (req, res) => {

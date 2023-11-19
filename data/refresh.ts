@@ -19,11 +19,6 @@ export async function makeRefresh(userId: number): Promise<string> {
     return token
 }
 
-// export async function checkRefresh(userId: number, refresh: string):Promise<false|number> {
-//     const dbResponse = await db.query('SELECT 0 as "whatever" FROM refresh WHERE user_id=$1 AND token=$2', [ userId, refresh ]);
-//     return dbResponse.rowCount == 1 ? userId : false
-// }
-
 export async function deleteRefresh(userId: number, refresh: string) {
     const dbResponse = await db.query('DELETE FROM refresh WHERE user_id=$1 AND token=$2', [userId, refresh])
     return dbResponse.rowCount == 1

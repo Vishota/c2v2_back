@@ -18,10 +18,10 @@ export async function removeAdmin(userId: number): Promise<boolean> {
         return false
     }
 }
-export async function isAdmin(userId: number):Promise<boolean> {
-    return (await db.query('SELECT 0 as "whatever" FROM admins WHERE user_id=$1', [userId])).rowCount != 0
+export async function isAdmin(userId: number): Promise<false | { admin: true, prime: boolean }> {
+    const dbResponse = await db.query('SELECT is_prime FROM admins WHERE user_id=$1', [userId])
+    return dbResponse.rowCount != 0 ? {
+        admin: true,
+        prime: dbResponse.rows[0].is_prime
+    } : false
 }
-(async()=>{
-await removeAdmin(1).then(r=>console.log(r))
-await isAdmin(1).then(o=>console.log(o));
-})()

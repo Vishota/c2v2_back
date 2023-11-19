@@ -16,12 +16,17 @@ export async function getAuth(...[req, res]: Parameters<Handler>): Promise<numbe
     }
     return auth ? auth.id : false
 }
-export async function checkAdmin(...[req, res, next]: Parameters<Handler>): Promise<{id: number, admin: boolean}|false> {
+export async function checkAdmin(...[req, res, next]: Parameters<Handler>): Promise<{
+    id?: number; isAdmin: false | {
+        admin: true
+        prime: boolean
+    }
+}> {
     const id = await getAuth(req, res, next);
-    if(!id) return false;
+    if (!id) return { isAdmin: false };
     return {
         id,
-        admin: await isAdmin(id)
+        isAdmin: await isAdmin(id)
     }
 }
 
