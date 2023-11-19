@@ -6,6 +6,17 @@ const app = express()
 app.use(cookieParser())
 
 Object.entries(auth).forEach(([url, handler]) => {
-    app.all(url, handler);
+    applyHandler(url, handler)
 })
 app.listen(80)
+
+function applyHandler(url:string, handler:express.Handler) {
+    app.all(url, async (req,res,next)=>{
+        try {
+            await handler(req,res,next)
+        } catch (e) {
+            console.log(e + ' catched');
+            console.trace();
+        }
+    });
+}
