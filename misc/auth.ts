@@ -2,6 +2,7 @@ import { Handler } from 'express'
 import { checkTokens } from '../logics/auth'
 import { Response } from 'express'
 import env from '../infrastructure/env'
+import { isAdmin } from '../data/admins'
 
 export async function getAuth(...[req, res]: Parameters<Handler>): Promise<number | false> {
     if (!(req.cookies.access && req.cookies.refresh)) {
@@ -14,6 +15,14 @@ export async function getAuth(...[req, res]: Parameters<Handler>): Promise<numbe
         setAuthCookie(res, auth)
     }
     return auth ? auth.id : false
+}
+export async function checkAdmin(...[req, res, next]: Parameters<Handler>): Promise<{id: number, admin: boolean}|false> {
+    const id = await getAuth(req, res, next);
+    if(!id) return false;
+    return {
+        id,
+        admin: await isAdmin(id)
+    }
 }
 
 export function setAuthCookie(res: Response, info: { id: number, tokens?: { access?: string, refresh?: string } }) {

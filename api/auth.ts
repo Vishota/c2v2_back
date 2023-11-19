@@ -2,7 +2,9 @@ import { Handler } from 'express'
 import { checkKeys } from '../misc/api'
 import { logIn, signUp } from '../logics/auth'
 import env from '../infrastructure/env'
-import { getAuth, setAuthCookie } from '../misc/auth'
+import { checkAdmin, getAuth, setAuthCookie } from '../misc/auth'
+import { Request, ParamsDictionary, Response, NextFunction } from 'express-serve-static-core'
+import { ParsedQs } from 'qs'
 
 export default {
     '/auth': async (req, res) => {
@@ -27,6 +29,6 @@ export default {
         }
     },
     '/auth/me': async (req, res, next) => {
-        res.send(''+await getAuth(req, res, next))
+        res.send(await checkAdmin(req, res, next))
     }
 } as { [url: string]: Handler }
