@@ -1,6 +1,6 @@
-import db from "../common/db";
+import db from "../infrastructure/db";
 import bcrypt from 'bcrypt'
-import env from "../common/env";
+import env from "../infrastructure/env";
 
 export async function insertUser(
     username: string,
@@ -22,7 +22,7 @@ export async function checkUser(
     username: string,
     password: string
 ): Promise<number | false> {
-    const dbResponse = await db.query('SELECT id, password_hash FROM accounts WHERE username=$1', [
+    const dbResponse = await db.query('SELECT id, password_hash FROM accounts WHERE username=$1 AND access=TRUE', [
         username
     ])
     if(dbResponse.rowCount != 1) return false;
