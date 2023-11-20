@@ -56,15 +56,17 @@ CREATE TABLE "public"."teachers" (
     "speciality" character varying(100) NOT NULL,
     "about" character varying(1000) NOT NULL,
     "since" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    "active" boolean DEFAULT false NOT NULL,
+    "is_active" boolean DEFAULT false NOT NULL,
     CONSTRAINT "teachers_pkey" PRIMARY KEY ("user_id")
 ) WITH (oids = false);
 
 
 ALTER TABLE ONLY "public"."admins" ADD CONSTRAINT "admins_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
+ALTER TABLE ONLY "public"."content" ADD CONSTRAINT "content_owner_user_id_fkey" FOREIGN KEY (owner_user_id) REFERENCES teachers(user_id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+
 ALTER TABLE ONLY "public"."refresh" ADD CONSTRAINT "refresh_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."teachers" ADD CONSTRAINT "teachers_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
--- 2023-11-20 17:06:03.752705+00
+-- 2023-11-20 19:19:46.164314+00

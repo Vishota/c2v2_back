@@ -11,7 +11,7 @@ export async function addTeacher(userId: number, data: {
 }
 
 export async function setTeacherActive(userId: number, active: boolean) {
-    const dbResponse = await db.query('UPDATE teachers SET active=$2 WHERE user_id=$1', [userId, active]);
+    const dbResponse = await db.query('UPDATE teachers SET is_active=$2 WHERE user_id=$1', [userId, active]);
 
     return dbResponse.rowCount == 1
 }

@@ -30,11 +30,11 @@ export default {
     '/admin/setTeacherActive': async (req, res, next) => {
         const request = checkKeys(req.query as any, ['id'], ['active', 'inactive'])
         const admin = await checkAdmin(req, res, next)
-        if(!admin.isAdmin) {
+        if (!admin.isAdmin) {
             res.send({ success: false, info: 'not_admin' });
             return false;
         }
-        // 'active' passed in query => set active, else inactive
-        res.send({ success: await setTeacherActive(parseInt(request.id), 'active' in request) })
+        // 'inactive' passed in query => set inactive, else active
+        res.send({ success: await setTeacherActive(parseInt(request.id), !('inactive' in request)) })
     }
 } as { [url: string]: Handler }
