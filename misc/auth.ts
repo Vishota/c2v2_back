@@ -6,10 +6,10 @@ import { isAdmin } from '../data/admins'
 import { getTeacherInfo } from '../data/teachers'
 
 export async function getAuth(...[req, res]: Parameters<Handler>): Promise<number | false> {
-    if (!(req.cookies.access && req.cookies.refresh)) {
+    if (!req.cookies.refresh) {
         return false
     }
-    const [id, refresh] = req.cookies.refresh.split('>')
+    const [id, refresh] = req.cookies.refresh.split('~')
     const auth = await checkTokens(parseInt(id), req.cookies.access, refresh);
     if (!auth) return false;
     if (auth.tokens) {
@@ -54,7 +54,7 @@ export function setAuthCookie(res: Response, info: { id: number, tokens?: { acce
 
     }
     if (info.tokens?.refresh) {
-        res.cookie('refresh', info.id + '>' + info.tokens.refresh, {
+        res.cookie('refresh', info.id + '~' + info.tokens.refresh, {
             maxAge: parseInt(env.get('REFRESH_ALIVE_MS')),
             httpOnly: true
         });

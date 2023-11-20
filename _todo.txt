@@ -1,4 +1,3 @@
-!!! fix refreshing token
 password&login validation
 prevent id incrementation
 add the ability to delete a token (logout on server side)

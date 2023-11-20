@@ -7,9 +7,11 @@ import jwt from "../infrastructure/jwt";
 export { insertUser as addUser, checkUser }
 export { makeRefresh }
 
-export async function checkTokens(userId: number, access: string, refresh: string): Promise<false | { id: number; tokens?: { access: string; refresh: string; }; }> {
-    const accessChecked = await checkAccess(userId, access)
-    if (accessChecked) return { id: accessChecked }
+export async function checkTokens(userId: number, access: string|undefined, refresh: string): Promise<false | { id: number; tokens?: { access: string; refresh: string; }; }> {
+    if(access) {
+        const accessChecked = await checkAccess(userId, access)
+        if (accessChecked) return { id: accessChecked }
+    }
     const refreshed = await useRefresh(userId, refresh);
     if (!refreshed) return false
     return {
