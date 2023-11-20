@@ -15,3 +15,9 @@ export async function setTeacherActive(userId: number, active: boolean) {
 
     return dbResponse.rowCount == 1
 }
+
+export async function getTeacherInfo(userId: number) {
+    const dbResponse = await db.query('SELECT * FROM teachers WHERE user_id=$1', [userId])
+
+    return dbResponse.rows[0] ? dbResponse.rows[0] : false
+}
