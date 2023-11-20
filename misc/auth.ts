@@ -3,8 +3,9 @@ import { checkTokens } from '../logics/auth'
 import { Response } from 'express'
 import env from '../infrastructure/env'
 import { isAdmin } from '../data/admins'
+import { getTeacherInfo } from '../data/teachers'
 
-async function getAuth(...[req, res]: Parameters<Handler>): Promise<number | false> {
+export async function getAuth(...[req, res]: Parameters<Handler>): Promise<number | false> {
     if (!(req.cookies.access && req.cookies.refresh)) {
         return false
     }
@@ -16,7 +17,7 @@ async function getAuth(...[req, res]: Parameters<Handler>): Promise<number | fal
     }
     return auth ? auth.id : false
 }
-async function checkAdmin(...[req, res, next]: Parameters<Handler>): Promise<{
+export async function checkAdmin(...[req, res, next]: Parameters<Handler>): Promise<{
     id?: number; isAdmin: false | {
         admin: true
         prime: boolean
@@ -29,8 +30,22 @@ async function checkAdmin(...[req, res, next]: Parameters<Handler>): Promise<{
         isAdmin: await isAdmin(id)
     }
 }
+export async function checkTeacher(...[req, res, next]: Parameters<Handler>): Promise<{
+    id?: number,
+    teacher: boolean,
+    active?: boolean
+}> {
+    const id = await getAuth(req, res, next);
+    if (!id) return { teacher: false };
+    const teacherInfo = await getTeacherInfo(id)
+    return {
+        id,
+        teacher: teacherInfo ? true : false,
+        active: teacherInfo.is_active
+    }
+}
 
-function setAuthCookie(res: Response, info: { id: number, tokens?: { access?: string, refresh?: string } }) {
+export function setAuthCookie(res: Response, info: { id: number, tokens?: { access?: string, refresh?: string } }) {
     if (info.tokens?.access) {
         res.cookie('access', info.tokens.access, {
             maxAge: parseInt(env.get('ACCESS_ALIVE_MS')),
@@ -45,40 +60,3 @@ function setAuthCookie(res: Response, info: { id: number, tokens?: { access?: st
         });
     }
 }
-
-async function getAuth_fake_true(...[req, res]: Parameters<Handler>): Promise<number | false> {
-    return 1
-}
-
-// FAKES
-function makeFake_getAuth(fakeUserId: number): typeof getAuth {
-    return async () => fakeUserId
-}
-function makeFake_checkAdmin(getAuthF: typeof getAuth, admin: boolean, prime: boolean): typeof checkAdmin {
-    return async (req, res, next) => {
-        const id = await getAuthF(req, res, next);
-        if (!id) {
-            throw 'noid'
-            return 0 as any // without this IDE thinks that type of id still can be false further, despite exception is thrown in case it is equal to false
-        }
-        return {
-            id,
-            isAdmin: admin ? {
-                admin: true,
-                prime
-            } : false
-        }
-    }
-}
-
-const fake_getAuth = makeFake_getAuth(3);
-const fake_checkAdmin = makeFake_checkAdmin(fake_getAuth, false, false);
-
-// // export fake
-// export {
-//     fake_getAuth as getAuth,
-//     fake_checkAdmin as checkAdmin,
-//     setAuthCookie
-// }
-// export not fake
-export { getAuth, checkAdmin, setAuthCookie }

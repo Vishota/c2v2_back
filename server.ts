@@ -3,24 +3,24 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import admin from "./api/admin";
 import teachers from "./api/teachers";
+import content from "./api/content";
 
 const app = express()
 app.use(cookieParser())
 
-const api = {...auth, ...admin, ...teachers}
+const api = {...auth, ...admin, ...teachers, ...content}
 
 Object.entries(api).forEach(([url, handler]) => {
     applyHandler(url, handler)
 })
-app.listen(80)
 
 function applyHandler(url: string, handler: express.Handler) {
     app.all(url, async (req, res, next) => {
         try {
             await handler(req, res, next)
         } catch (e) {
-            console.log(e + ' catched');
-            console.log( (e as Error).stack )
+            console.warn(e + ' catched');
+            console.warn( (e as Error).stack )
             try {
                 res.send({ success: false })
             }
@@ -28,3 +28,7 @@ function applyHandler(url: string, handler: express.Handler) {
         }
     });
 }
+
+const port = 80
+app.listen(port)
+console.warn(`API is running at ${port} port`);
