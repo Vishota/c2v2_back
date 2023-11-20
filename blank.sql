@@ -38,6 +38,20 @@ CREATE TABLE "public"."content" (
 ) WITH (oids = false);
 
 
+DROP TABLE IF EXISTS "courses";
+DROP SEQUENCE IF EXISTS courses_id_seq;
+CREATE SEQUENCE courses_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."courses" (
+    "id" integer DEFAULT nextval('courses_id_seq') NOT NULL,
+    "owner_user_id" integer NOT NULL,
+    "title" character varying(100) NOT NULL,
+    "about" character varying(3000) NOT NULL,
+    "accessible" boolean NOT NULL,
+    CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+
 DROP TABLE IF EXISTS "refresh";
 CREATE TABLE "public"."refresh" (
     "user_id" integer NOT NULL,
@@ -69,4 +83,4 @@ ALTER TABLE ONLY "public"."refresh" ADD CONSTRAINT "refresh_user_id_fkey" FOREIG
 
 ALTER TABLE ONLY "public"."teachers" ADD CONSTRAINT "teachers_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
--- 2023-11-20 19:19:46.164314+00
+-- 2023-11-20 19:38:20.083492+00
