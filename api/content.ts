@@ -15,7 +15,8 @@ export default {
     '/content/get': async (req, res, next) => {
         const request = checkKeys(req.query as any, ['id'])
         const admin = await checkAdmin(req, res, next)
-        res.send(await getContent(parseInt(request.id), admin.isAdmin != false, admin.id))
+        const content = await getContent(parseInt(request.id), admin.isAdmin != false, admin.id);
+        res.send(content ? content : { success: false })
     },
     '/content/show': async (req, res, next) => {
         const request = checkKeys(req.query as any, ['id'])

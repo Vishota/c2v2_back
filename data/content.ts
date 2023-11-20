@@ -21,7 +21,7 @@ export async function setContentAccessible(contentId: number, accessible: boolea
         [contentId, accessible, as])
     return dbResponse.rowCount != 0
 }
-export async function getContent(contentId: number, asAdmin: boolean = false, asUser: number = NaN) {
+export async function getContent(contentId: number, asAdmin: boolean = false, asUser: number|null = null) {
     const dbRequest = asAdmin ? 'SELECT * FROM content WHERE id=$1' : 'SELECT * FROM content WHERE id=$1 AND (accessible=TRUE OR owner_user_id=$2)'
     const dbResponse = await db.query(dbRequest,
         asAdmin ? [contentId] : [contentId, asUser]);
