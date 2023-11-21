@@ -1,4 +1,4 @@
--- Adminer 4.8.1 PostgreSQL 16.1 (Debian 16.1-1.pgdg120+1) dump
+-- Adminer 4.8.1 PostgreSQL 16.0 (Debian 16.0-1.pgdg120+1) dump
 
 DROP TABLE IF EXISTS "accounts";
 DROP SEQUENCE IF EXISTS accounts_id_seq;
@@ -8,8 +8,6 @@ CREATE TABLE "public"."accounts" (
     "id" integer DEFAULT nextval('accounts_id_seq') NOT NULL,
     "username" character varying(16) NOT NULL,
     "password_hash" character varying(60) NOT NULL,
-    "access" boolean DEFAULT true NOT NULL,
-    "created" timestamp DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CONSTRAINT "accounts_pkey" PRIMARY KEY ("id"),
     CONSTRAINT "accounts_username" UNIQUE ("username")
 ) WITH (oids = false);
@@ -38,6 +36,14 @@ CREATE TABLE "public"."content" (
 ) WITH (oids = false);
 
 
+DROP TABLE IF EXISTS "course_content_attachments";
+CREATE TABLE "public"."course_content_attachments" (
+    "content_id" integer NOT NULL,
+    "course_id" integer NOT NULL,
+    CONSTRAINT "attached_course-content_content_id_course_id" PRIMARY KEY ("content_id", "course_id")
+) WITH (oids = false);
+
+
 DROP TABLE IF EXISTS "courses";
 DROP SEQUENCE IF EXISTS courses_id_seq;
 CREATE SEQUENCE courses_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
@@ -47,7 +53,7 @@ CREATE TABLE "public"."courses" (
     "owner_user_id" integer NOT NULL,
     "title" character varying(100) NOT NULL,
     "about" character varying(3000) NOT NULL,
-    "accessible" boolean NOT NULL,
+    "accessible" boolean DEFAULT true NOT NULL,
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
@@ -79,8 +85,9 @@ ALTER TABLE ONLY "public"."admins" ADD CONSTRAINT "admins_user_id_fkey" FOREIGN 
 
 ALTER TABLE ONLY "public"."content" ADD CONSTRAINT "content_owner_user_id_fkey" FOREIGN KEY (owner_user_id) REFERENCES teachers(user_id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
-ALTER TABLE ONLY "public"."refresh" ADD CONSTRAINT "refresh_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."course_content_attachments" ADD CONSTRAINT "attached_course-content_content_id_fkey" FOREIGN KEY (content_id) REFERENCES content(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."course_content_attachments" ADD CONSTRAINT "attached_course-content_course_id_fkey" FOREIGN KEY (course_id) REFERENCES courses(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."teachers" ADD CONSTRAINT "teachers_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
--- 2023-11-20 19:38:20.083492+00
+-- 2023-11-21 22:31:05.027754+00
