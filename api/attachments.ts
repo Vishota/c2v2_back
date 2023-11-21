@@ -1,7 +1,7 @@
 import { Handler } from 'express'
 import { checkKeys } from '../misc/api'
 import { checkAdmin } from '../misc/auth';
-import { attach, detach } from '../data/course-contentAttachments';
+import { attach, detach } from '../data/courseContentAttachments';
 
 export default {
     '/attachments/attach': async (req, res, next) => {

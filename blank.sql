@@ -1,5 +1,13 @@
 -- Adminer 4.8.1 PostgreSQL 16.0 (Debian 16.0-1.pgdg120+1) dump
 
+DROP TABLE IF EXISTS "account_course_access";
+CREATE TABLE "public"."account_course_access" (
+    "account_id" integer NOT NULL,
+    "course_id" integer NOT NULL,
+    CONSTRAINT "account_course_access_account_id_course_id" PRIMARY KEY ("account_id", "course_id")
+) WITH (oids = false);
+
+
 DROP TABLE IF EXISTS "accounts";
 DROP SEQUENCE IF EXISTS accounts_id_seq;
 CREATE SEQUENCE accounts_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
@@ -81,6 +89,9 @@ CREATE TABLE "public"."teachers" (
 ) WITH (oids = false);
 
 
+ALTER TABLE ONLY "public"."account_course_access" ADD CONSTRAINT "account_course_access_account_id_fkey" FOREIGN KEY (account_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."account_course_access" ADD CONSTRAINT "account_course_access_course_id_fkey" FOREIGN KEY (course_id) REFERENCES courses(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+
 ALTER TABLE ONLY "public"."admins" ADD CONSTRAINT "admins_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
 ALTER TABLE ONLY "public"."content" ADD CONSTRAINT "content_owner_user_id_fkey" FOREIGN KEY (owner_user_id) REFERENCES teachers(user_id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
@@ -90,4 +101,4 @@ ALTER TABLE ONLY "public"."course_content_attachments" ADD CONSTRAINT "attached_
 
 ALTER TABLE ONLY "public"."teachers" ADD CONSTRAINT "teachers_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
--- 2023-11-21 22:31:05.027754+00
+-- 2023-11-21 22:53:08.785643+00
