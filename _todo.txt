@@ -4,3 +4,4 @@ add the ability to delete a token (logout on server side)
 make fakes for auth work if env var set (like 'AUTH_USE_FAKE=1', 'AUTH_FAKE_ID=16' or something like this)
 add the ability to update teacher account info
 make error messages more clear
+make material viewing condition access to one of the courses that this material attached to
