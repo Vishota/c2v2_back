@@ -22,8 +22,17 @@ export async function setContentAccessible(contentId: number, accessible: boolea
     return dbResponse.rowCount != 0
 }
 export async function getContent(contentId: number, asAdmin: boolean = false, asUser: number|null = null) {
-    const dbRequest = asAdmin ? 'SELECT * FROM content WHERE id=$1' : 'SELECT * FROM content WHERE id=$1 AND (accessible=TRUE OR owner_user_id=$2)'
-    const dbResponse = await db.query(dbRequest,
-        asAdmin ? [contentId] : [contentId, asUser]);
+    if(!asAdmin && !asUser) throw 'no_auth'
+    const dbRequest = asAdmin ?
+        'SELECT * FROM content WHERE id=$1' :
+        'SELECT * FROM content WHERE id=$1 AND (accessible=TRUE OR owner_user_id=$2)'
+    const dbResponse = asAdmin ?
+        await db.query(`SELECT * FROM content WHERE id=$1`, [contentId]) :
+        await db.query(`SELECT * FROM content WHERE id=$1 AND (accessible=TRUE AND EXISTS (
+            SELECT 1 FROM course_content_attachments JOIN account_course_access
+            ON course_content_attachments.course_id=account_course_access.course_id
+            AND course_content_attachments.content_id=$1
+            AND account_course_access.account_id=$2
+        ) OR owner_user_id=$2)`, [contentId, asUser])
     return dbResponse.rowCount ? dbResponse.rows[0] : false
 }
