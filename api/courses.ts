@@ -6,10 +6,10 @@ import { setContentAccessible } from "../data/content";
 
 export default {
     '/courses/new': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['title', 'about'])
+        const request = checkKeys(req.query as any, ['title', 'about', 'price'])
         const teacher = await checkTeacher(req, res, next)
         if (!teacher.id) throw 'not_a_teacher'
-        res.send({ id: await addCourse(teacher.id, request.title, request.about) })
+        res.send({ id: await addCourse(teacher.id, request.title, request.about, parseInt(request.price)) })
     },
     '/courses/show': async (req, res, next) => {
         const request = checkKeys(req.query as any, ['id'])
