@@ -23,9 +23,6 @@ export async function setContentAccessible(contentId: number, accessible: boolea
 }
 export async function getContent(contentId: number, asAdmin: boolean = false, asUser: number|null = null) {
     if(!asAdmin && !asUser) throw 'no_auth'
-    const dbRequest = asAdmin ?
-        'SELECT * FROM content WHERE id=$1' :
-        'SELECT * FROM content WHERE id=$1 AND (accessible=TRUE OR owner_user_id=$2)'
     const dbResponse = asAdmin ?
         await db.query(`SELECT * FROM content WHERE id=$1`, [contentId]) :
         await db.query(`SELECT * FROM content WHERE id=$1 AND (accessible=TRUE AND EXISTS (
