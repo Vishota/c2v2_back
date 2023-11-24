@@ -62,7 +62,23 @@ CREATE TABLE "public"."courses" (
     "title" character varying(100) NOT NULL,
     "about" character varying(3000) NOT NULL,
     "accessible" boolean DEFAULT true NOT NULL,
+    "price" integer NOT NULL,
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
+) WITH (oids = false);
+
+
+DROP TABLE IF EXISTS "payment_operations";
+DROP SEQUENCE IF EXISTS payment_operations_id_seq;
+CREATE SEQUENCE payment_operations_id_seq INCREMENT 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1;
+
+CREATE TABLE "public"."payment_operations" (
+    "id" integer DEFAULT nextval('payment_operations_id_seq') NOT NULL,
+    "wallet_id" integer NOT NULL,
+    "amount" integer NOT NULL,
+    "is_successful" boolean,
+    "description" character varying(100),
+    "purchased_course_id" integer,
+    CONSTRAINT "payment_operations_pkey" PRIMARY KEY ("id")
 ) WITH (oids = false);
 
 
@@ -89,6 +105,14 @@ CREATE TABLE "public"."teachers" (
 ) WITH (oids = false);
 
 
+DROP TABLE IF EXISTS "wallets";
+CREATE TABLE "public"."wallets" (
+    "owner_user_id" integer NOT NULL,
+    "balance" integer DEFAULT '0' NOT NULL,
+    CONSTRAINT "wallets_owner_user_id" PRIMARY KEY ("owner_user_id")
+) WITH (oids = false);
+
+
 ALTER TABLE ONLY "public"."account_course_access" ADD CONSTRAINT "account_course_access_account_id_fkey" FOREIGN KEY (account_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."account_course_access" ADD CONSTRAINT "account_course_access_course_id_fkey" FOREIGN KEY (course_id) REFERENCES courses(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
@@ -99,6 +123,13 @@ ALTER TABLE ONLY "public"."content" ADD CONSTRAINT "content_owner_user_id_fkey" 
 ALTER TABLE ONLY "public"."course_content_attachments" ADD CONSTRAINT "attached_course-content_content_id_fkey" FOREIGN KEY (content_id) REFERENCES content(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 ALTER TABLE ONLY "public"."course_content_attachments" ADD CONSTRAINT "attached_course-content_course_id_fkey" FOREIGN KEY (course_id) REFERENCES courses(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
+ALTER TABLE ONLY "public"."payment_operations" ADD CONSTRAINT "payment_operations_purchased_course_id_fkey" FOREIGN KEY (purchased_course_id) REFERENCES courses(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+ALTER TABLE ONLY "public"."payment_operations" ADD CONSTRAINT "payment_operations_wallet_id_fkey" FOREIGN KEY (wallet_id) REFERENCES wallets(owner_user_id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+
+ALTER TABLE ONLY "public"."refresh" ADD CONSTRAINT "refresh_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
+
 ALTER TABLE ONLY "public"."teachers" ADD CONSTRAINT "teachers_user_id_fkey" FOREIGN KEY (user_id) REFERENCES accounts(id) ON UPDATE RESTRICT ON DELETE RESTRICT NOT DEFERRABLE;
 
--- 2023-11-21 22:53:08.785643+00
+ALTER TABLE ONLY "public"."wallets" ADD CONSTRAINT "wallets_owner_user_id_fkey" FOREIGN KEY (owner_user_id) REFERENCES accounts(id) NOT DEFERRABLE;
+
+-- 2023-11-24 08:19:08.880192+00

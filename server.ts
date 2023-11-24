@@ -7,11 +7,12 @@ import content from "./api/content";
 import courses from "./api/courses";
 import attachments from "./api/attachments";
 import access from "./api/access";
+import finances from "./api/finances";
 
 const app = express()
 app.use(cookieParser())
 
-const api = {...auth, ...admin, ...teachers, ...content, ...courses, ...attachments, ...access}
+const api = {...auth, ...admin, ...teachers, ...content, ...courses, ...attachments, ...access, ...finances}
 
 Object.entries(api).forEach(([url, handler]) => {
     applyHandler(url, handler)
