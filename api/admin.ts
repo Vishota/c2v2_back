@@ -2,7 +2,7 @@ import { Handler } from "express";
 import { checkKeys } from "../misc/api";
 import { checkAdmin } from "../misc/auth";
 import { setUserAccess } from "../data/accounts";
-import { addTeacher, setTeacherActive } from "../data/teachers";
+import { setTeacherActive } from "../data/teachers";
 
 export default {
     '/admin/ban': async (req, res, next) => {
