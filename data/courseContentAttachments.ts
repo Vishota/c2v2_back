@@ -24,3 +24,8 @@ export async function detach(contentId: number, courseId: number, as: 'ADMIN' | 
 
     return dbResponse.rowCount != 0
 }
+
+export async function getAttachmentsList(courseId: number) {
+    const dbResponse = await db.query('SELECT content_id FROM course_content_attachments WHERE course_id=$1', [courseId])
+    return dbResponse.rows.map(row => row.content_id)
+}

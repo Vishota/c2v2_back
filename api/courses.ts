@@ -26,6 +26,6 @@ export default {
     '/courses/get': async (req, res, next) => {
         const request = checkKeys(req.body as any, ['id'])
         const admin = await checkAdmin(req, res, next)
-        res.send({course: await getCourse(parseInt(request.id), admin.isAdmin ? 'ADMIN' : admin.id ? admin.id : null)})
+        res.send({ course: await getCourse(parseInt(request.id), admin.isAdmin ? 'ADMIN' : admin.id ? admin.id : null) })
     }
 } as { [url: string]: Handler }

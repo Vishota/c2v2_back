@@ -22,3 +22,8 @@ export async function removeAccess(accountId: number, courseId: number, as: 'ADM
 
     return dbResponse.rowCount != 0
 }
+
+export async function checkAccess(accountId: number, courseId: number):Promise<boolean> {
+    const dbResponse = await db.query('SELECT 1 FROM account_course_access WHERE account_id=$1 AND course_id=$2', [accountId, courseId])
+    return dbResponse.rowCount != 0;
+}
