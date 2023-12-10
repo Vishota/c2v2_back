@@ -5,7 +5,7 @@ import { getAuth } from "../misc/auth";
 
 export default {
     '/teachers/addSelf': async (req, res, next) => {
-        const request = checkKeys(JSON.parse(req.body) as any, ['name', 'speciality', 'about'])
+        const request = checkKeys(req.body as any, ['name', 'speciality', 'about'])
         const me = await getAuth(req, res, next)
         if (!me) {
             res.send({ success: false })
@@ -14,7 +14,7 @@ export default {
         res.send({ success: await addTeacher(me, request) })
     },
     '/teachers/info': async (req, res, next) => {
-        const request = checkKeys(JSON.parse(req.body) as any, ['id'])
+        const request = checkKeys(req.body as any, ['id'])
         res.send({ info: await getTeacherInfo(parseInt(request.id)) })
     }
 } as { [url: string]: Handler }

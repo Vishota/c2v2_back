@@ -20,7 +20,7 @@ export default {
         })
     },
     '/finances/deposit': async (req, res, next) => {
-        const request = checkKeys(JSON.parse(req.body) as any, ['amount', 'method'])
+        const request = checkKeys(req.body as any, ['amount', 'method'])
         const me = await getAuth(req, res, next)
         if (!me) return;
         res.send({
@@ -28,7 +28,7 @@ export default {
         })
     },
     '/finances/buyCourse': async (req, res, next) => {
-        const request = checkKeys(JSON.parse(req.body) as any, ['id'])
+        const request = checkKeys(req.body as any, ['id'])
         const me = await getAuth(req, res, next)
         if (!me) return
         

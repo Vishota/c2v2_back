@@ -12,6 +12,7 @@ import search from "./api/search";
 
 const app = express()
 app.use(cookieParser())
+app.use(express.json());
 
 const api = { ...auth, ...admin, ...teachers, ...content, ...courses, ...attachments, ...access, ...finances, ...search }
 
