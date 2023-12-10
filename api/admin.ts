@@ -6,7 +6,7 @@ import { setTeacherActive } from "../data/teachers";
 
 export default {
     '/admin/ban': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['id']);
+        const request = checkKeys(JSON.parse(req.body) as any, ['id']);
         const admin = await checkAdmin(req, res, next)
         if (!admin.isAdmin) {
             res.send({ success: false, info: 'not_admin' });
@@ -17,7 +17,7 @@ export default {
         })
     },
     '/admin/unban': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['id']);
+        const request = checkKeys(JSON.parse(req.body) as any, ['id']);
         const admin = await checkAdmin(req, res, next)
         if (!admin.isAdmin) {
             res.send({ success: false, info: 'not_admin' });
@@ -28,7 +28,7 @@ export default {
         })
     },
     '/admin/setTeacherActive': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['id'], ['active', 'inactive'])
+        const request = checkKeys(JSON.parse(req.body) as any, ['id'], ['active', 'inactive'])
         const admin = await checkAdmin(req, res, next)
         if (!admin.isAdmin) {
             res.send({ success: false, info: 'not_admin' });

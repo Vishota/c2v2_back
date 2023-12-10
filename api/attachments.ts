@@ -5,13 +5,13 @@ import { attach, detach } from '../data/courseContentAttachments';
 
 export default {
     '/attachments/attach': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['course', 'content']);
+        const request = checkKeys(JSON.parse(req.body) as any, ['course', 'content']);
         const admin = await checkAdmin(req, res, next)
         if(!admin.id) throw 'no_auth'
         res.send({success : await attach(parseInt(request.content), parseInt(request.course), admin.isAdmin ? 'ADMIN' : admin.id)})
     },
     '/attachments/detach': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['course', 'content']);
+        const request = checkKeys(JSON.parse(req.body) as any, ['course', 'content']);
         const admin = await checkAdmin(req, res, next)
         if(!admin.id) throw 'no_auth'
         res.send({success : await detach(parseInt(request.content), parseInt(request.course), admin.isAdmin ? 'ADMIN' : admin.id)})

@@ -6,7 +6,7 @@ import { getUsername } from '../data/accounts'
 
 export default {
     '/auth': async (req, res) => {
-        const request = checkKeys(req.query as any, ['username', 'password'], ['signup'])
+        const request = checkKeys(JSON.parse(req.body) as any, ['username', 'password'], ['signup'])
         if ('signup' in request) {
             const signedUp = await signUp(request.username, request.password)
             if (!signedUp) {
