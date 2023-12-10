@@ -15,5 +15,5 @@ export default {
         const admin = await checkAdmin(req, res, next)
         if (!admin.id) throw 'no_auth'
         res.send({ success: await removeAccess(parseInt(request.account), parseInt(request.course), admin.isAdmin ? 'ADMIN' : admin.id) })
-    },
+    }
 } as { [url: string]: Handler }

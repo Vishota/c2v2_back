@@ -1,12 +1,14 @@
 import db from "../infrastructure/db";
 import bcrypt from 'bcrypt'
 import env from "../infrastructure/env";
+import * as validation from '../misc/validation'
 
 export async function insertUser(
     username: string,
     password: string
 ): Promise<number | false> {
     try {
+        if (!(validation.validateLogin(username) && validation.validatePassword(password))) throw 'bad data'; 
         const dbResponse = await db.query('INSERT INTO accounts ("username", "password_hash") VALUES ($1, $2) RETURNING id', [
             username,
             await bcrypt.hash(password, parseInt(env.get('AUTH_BCRYPT_ROUNDS')))
@@ -31,7 +33,7 @@ export async function checkUser(
 
 export async function setUserAccess(userId: number, access: boolean, asPrime: boolean) {
     let dbResponse = asPrime ?
-        // can ban anyone axcept another prime admins
+        // can ban anyone except another prime admins
         await db.query(`UPDATE accounts
         SET access = $2
         WHERE id=$1 AND NOT EXISTS (
@@ -49,6 +51,13 @@ export async function setUserAccess(userId: number, access: boolean, asPrime: bo
             FROM admins
             WHERE admins.user_id = accounts.id
         );`, [userId, access]);
+
+    return dbResponse.rowCount == 1
+}
+
+export async function getUsername(id:number) {
+    let dbResponse = await db.query('SELECT username FROM accounts WHERE id = $1', [id])
+    console.log(dbResponse);
     
-        return dbResponse.rowCount == 1
+    return dbResponse.rows[0].username
 }

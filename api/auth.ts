@@ -1,7 +1,8 @@
 import { Handler } from 'express'
 import { checkKeys } from '../misc/api'
 import { logIn, signUp } from '../logics/auth'
-import { checkAdmin, setAuthCookie } from '../misc/auth'
+import { checkAdmin, checkTeacher, setAuthCookie } from '../misc/auth'
+import { getUsername } from '../data/accounts'
 
 export default {
     '/auth': async (req, res) => {
@@ -26,6 +27,16 @@ export default {
         }
     },
     '/auth/me': async (req, res, next) => {
-        res.send(await checkAdmin(req, res, next))
+        const admin = await checkAdmin(req, res, next);
+        const teacher = await checkTeacher(req, res, next);
+        res.send({
+            id: admin.id,
+            isAdmin: admin.isAdmin !== false,
+            isPrimeAdmin: admin.isAdmin ? admin.isAdmin.prime : false,
+            isTeacher: teacher.teacher,
+            isActiveTeacher: teacher.active === true,
+            isInactiveTeacher: teacher.active === false,
+            username: admin?.id ? await getUsername(admin.id) : undefined
+        })
     }
 } as { [url: string]: Handler }

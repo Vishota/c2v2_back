@@ -8,8 +8,8 @@ const depositMethods: {
     freemoney: async (walletId: number, amount: number) => pay(walletId, amount, 'Free money for test')
 }
 
-export async function deposit(walletId: number, amount: number, methods: keyof typeof depositMethods) {
-    return depositMethods[methods](walletId, amount);
+export async function deposit(walletId: number, amount: number, method: keyof typeof depositMethods) {
+    return depositMethods[method](walletId, amount);
 }
 export async function buyCourse(walletId: number, courseId: number) {
     const course = await getCourse(courseId, walletId)

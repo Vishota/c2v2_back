@@ -19,20 +19,21 @@ export default {
             success: await makeWallet(me)
         })
     },
-    '/finances/deposit/:method': async (req, res, next) => {
-        const request = checkKeys(req.query as any, ['amount'])
+    '/finances/deposit': async (req, res, next) => {
+        const request = checkKeys(req.query as any, ['amount', 'method'])
         const me = await getAuth(req, res, next)
         if (!me) return;
         res.send({
-            success: await deposit(me, parseInt(request.amount), req.params.method)
+            success: await deposit(me, parseInt(request.amount), request.method)
         })
     },
-    '/finances/buy/course:id': async (req, res, next) => {
+    '/finances/buyCourse': async (req, res, next) => {
+        const request = checkKeys(req.query as any, ['id'])
         const me = await getAuth(req, res, next)
         if (!me) return
         
         res.send({
-            success: await buyCourse(me, parseInt(req.params.id))
+            success: await buyCourse(me, parseInt(request.id))
         })
     }
 } as { [url: string]: Handler }

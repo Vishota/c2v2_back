@@ -8,11 +8,12 @@ import courses from "./api/courses";
 import attachments from "./api/attachments";
 import access from "./api/access";
 import finances from "./api/finances";
+import search from "./api/search";
 
 const app = express()
 app.use(cookieParser())
 
-const api = {...auth, ...admin, ...teachers, ...content, ...courses, ...attachments, ...access, ...finances}
+const api = { ...auth, ...admin, ...teachers, ...content, ...courses, ...attachments, ...access, ...finances, ...search }
 
 Object.entries(api).forEach(([url, handler]) => {
     applyHandler(url, handler)
@@ -24,7 +25,7 @@ function applyHandler(url: string, handler: express.Handler) {
             await handler(req, res, next)
         } catch (e) {
             console.warn(e + ' catched');
-            console.warn( (e as Error).stack )
+            console.warn((e as Error).stack)
             try {
                 res.send({ success: false })
             }
