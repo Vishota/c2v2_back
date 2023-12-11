@@ -2,7 +2,7 @@ import { Handler } from "express";
 import { checkKeys } from "../misc/api";
 import { checkAdmin } from "../misc/auth";
 import { setUserAccess } from "../data/accounts";
-import { setTeacherActive } from "../data/teachers";
+import { getInactiveList, setTeacherActive } from "../data/teachers";
 
 export default {
     '/admin/ban': async (req, res, next) => {
@@ -36,5 +36,13 @@ export default {
         }
         // 'inactive' passed in query => set inactive, else active
         res.send({ success: await setTeacherActive(parseInt(request.id), !('inactive' in request)) })
+    },
+    '/admin/getInactive': async (req, res, next) => {
+        const admin = await checkAdmin(req, res, next)
+        if (!admin.isAdmin) {
+            res.send({ success: false, info: 'not_admin' });
+            return false;
+        }
+        res.send({ success: await getInactiveList() })
     }
 } as { [url: string]: Handler }
