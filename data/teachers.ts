@@ -23,7 +23,7 @@ export async function getTeacherInfo(userId: number) {
 }
 
 export async function getInactiveList():Promise<number[]> {
-    const dbResponse = await db.query('SELECT user_id FROM teachers WHERE is_active=FALSE ORDER BY id DESC')
+    const dbResponse = await db.query('SELECT user_id FROM teachers WHERE is_active=FALSE ORDER BY since DESC')
 
     return dbResponse.rows.map(row=>row.user_id)
 }
