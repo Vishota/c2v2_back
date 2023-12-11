@@ -1,6 +1,7 @@
 import db from "../infrastructure/db";
 
 export async function addCourse(ownerUserId: number, title: string, about: string, price: number) {
+    if(price < 0) throw 'invalid price'
     const dbResponse = await db.query('INSERT INTO courses (owner_user_id, title, about, price) VALUES ($1,$2,$3,$4) RETURNING id',
         [ownerUserId, title, about, price])
     return dbResponse.rowCount ? dbResponse.rows[0].id as number : false
@@ -28,7 +29,8 @@ export async function search(prompt: string): Promise<{ id: number; rank: number
 
     const dbResponse = await db.query(`SELECT id, ts_rank(to_tsvector(replace_special_chars(title || ' ' || about)), plainto_tsquery(replace_special_chars($1))) as rank
         FROM courses
-        WHERE to_tsvector(replace_special_chars(title || ' ' || about)) @@ plainto_tsquery(replace_special_chars($1))
+        WHERE accessible = TRUE AND
+        to_tsvector(replace_special_chars(title || ' ' || about)) @@ plainto_tsquery(replace_special_chars($1))
         ORDER BY ts_rank(to_tsvector(replace_special_chars(title || ' ' || about)), plainto_tsquery(replace_special_chars($1))) DESC;`,
         [prompt])
     console.log(dbResponse);
@@ -36,7 +38,7 @@ export async function search(prompt: string): Promise<{ id: number; rank: number
     return dbResponse.rows;
 }
 export async function getOwnedBy(teacherId: number): Promise<number[]> {
-    const dbResponse = await db.query(`SELECT id FROM courses WHERE owner_user_id=$1`, [teacherId]);
+    const dbResponse = await db.query(`SELECT id FROM courses WHERE accessible = TRUE AND owner_user_id=$1`, [teacherId]);
     return dbResponse.rows.map(row => row.id);
 }
 export async function getAccesedBy(accountId: number): Promise<number[]> {

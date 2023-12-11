@@ -18,6 +18,6 @@ export default {
     },
     '/attachments/list': async (req, res, next) => {
         const request = checkKeys(req.body as any, ['course']);
-        res.send({success : await getAttachmentsList(parseInt(request.course))})
+        res.send({attached : await getAttachmentsList(parseInt(request.course))})
     }
 } as { [url: string]: Handler }
